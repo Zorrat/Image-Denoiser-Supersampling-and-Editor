@@ -12,7 +12,7 @@ https://arxiv.org/abs/1608.00367
 
 
 
-Dependencies
+Dependencies.
 
 conda install -c conda-forge opencv=4.3.0
 
@@ -20,6 +20,7 @@ pip install streamlit
 
 
 To run the project rename Directory to "ImageUpscaleProject" and Place it in C:/Users/'UserName"/
-on terminal run
+
+on conda terminal run the following.
 
 streamlit run ImageUpscaleProject/main.py
