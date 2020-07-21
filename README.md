@@ -1,26 +1,25 @@
-# Image-Denoiser-Supersampling-and-Editor
-Image Upsampling,Denoising and editor app created for Codestorm hackathon.
-This project utilizes 2 AI based image upsampling models to upsample ur images by 3x scale. All editing functions are implemented with OpenCV 4.3.0
+# AI Image SuperSamping,Denoiser and Image Editor App.
 
+This app was created for the Codestorm hackathon.
+This project utilizes 2 AI based image upsampling models to upsample  images by a scale of 3x.
+All editing functions are implemented with OpenCV 4.3.0.
 The models used in this project are
+
 https://arxiv.org/abs/1707.02921
 
 https://arxiv.org/abs/1608.00367
 
+Requirements :
+Create a virtual conda enviornment since opencv = 4.3 may clash with spyder.
+
+    conda create --name vEnv1 python=3.7
+    conda activate vEnv1
+    conda install -c conda-forge opencv=4.3.0
+    pip install streamlit
+
+Usage
+
+    streamlit run main.py
 
 
-
-
-
-Dependencies.
-
-conda install -c conda-forge opencv=4.3.0
-
-pip install streamlit
-
-
-To run the project rename Directory to "ImageUpscaleProject" and Place it in C:/Users/'UserName"/
-
-on conda terminal run the following.
-
-streamlit run ImageUpscaleProject/main.py
+    
