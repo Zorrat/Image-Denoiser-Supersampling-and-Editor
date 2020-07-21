@@ -8,11 +8,48 @@ from PIL import Image,ImageEnhance
 import time
 import numpy as np
 import os
+import sys
 import random
 import string
 from datetime import datetime
+import math
 
 #Helper Functions
+
+def bgr2rgb(img):
+    im_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    return im_rgb
+
+# define a function for peak signal-to-noise ratio (PSNR)
+def psnr(target, ref):
+         
+    # assume RGB image
+    target_data = target.astype(float)
+    ref_data = ref.astype(float)
+
+    diff = ref_data - target_data
+    diff = diff.flatten('C')
+
+    rmse = math.sqrt(np.mean(diff ** 2.))
+
+    return 20 * math.log10(255. / rmse)
+
+# define function for mean squared error (MSE)
+def mse(target, ref):
+    # the MSE between the two images is the sum of the squared difference between the two images
+    err = np.sum((target.astype('float') - ref.astype('float')) ** 2)
+    err /= float(target.shape[0] * target.shape[1])
+    
+    return err
+
+# define function that combines all three image quality metrics
+def compare_images(target, ref):
+    scores = []
+    scores.append(psnr(target, ref))
+    scores.append(mse(target, ref))
+    #scores.append(ssim(target, ref, multichannel =True))
+    
+    return scores
 
 @st.cache(suppress_st_warning=True)
 def loadim(img_file):
@@ -23,13 +60,12 @@ def loadim(img_file):
 def upScaleEDSR(image):
     # Create an SR object
     sr = dnn_superres.DnnSuperResImpl_create()
-    path = "ImageUpscaleProject/weights/EDSR_x3.pb"
+    path = os.path.join(os.path.dirname(__file__),"weights\\EDSR_x3.pb")
     sr.readModel(path)
     # Set the desired model and scale to get correct pre- and post-processing
     sr.setModel("edsr", 3)
     result = sr.upsample(image)
     return result
-    #cv2.imwrite('SuperResTest/UpscaledIm/'+ saveName, result)
 
 def crop(img,x,y):
     y1,x1 = x
@@ -41,7 +77,7 @@ def upScaleFSRCNN(image):
     # Create an SR object
     sr = dnn_superres.DnnSuperResImpl_create()
 
-    path = "ImageUpscaleProject/weights/FSRCNN_x3.pb"
+    path = os.path.join(os.path.dirname(__file__),"weights\\FSRCNN_x3.pb")
     sr.readModel(path)
     # Set the desired model and scale to get correct pre- and post-processing
     sr.setModel("fsrcnn", 3)
@@ -83,7 +119,7 @@ def randomString(stringLength=8):
 def save(typ,img):
     now = datetime.now()
     time_stamp = now.strftime("%m_%d_%H_%M_%S") 
-    fn ='ImageUpscaleProject/Saved_Images/'+typ+time_stamp+'.png'
+    fn =os.path.join(os.path.dirname(__file__),'Saved_Images\\'+typ+time_stamp+'.png') # Couldnt find a way to get the correct system dir path so dont change the name of the file this is a mess. I repeat This is a mess .
     cv2.imwrite(fn,img)
     
 
@@ -106,7 +142,7 @@ def main():
 
         # Sidebar activites defined
         st.sidebar.subheader("Select which Editing Function you would like to Use")
-        activities = ['Super Sampling','Denoise','Resize','Filter','Rotate','Crop','About']
+        activities = ['About','Super Sampling','Denoise','Resize','Filter','Rotate','Crop']
         sidebar_choice = st.sidebar.selectbox('Select a feature',activities)
         #Sidebar activites
         if sidebar_choice == 'Super Sampling':
@@ -304,7 +340,6 @@ def main():
             st.subheader("These Image upscaling Models are based on the Following papers")
             st.write('https://arxiv.org/abs/1707.02921')
             st.write('https://arxiv.org/abs/1608.00367')
-
 
 
 if __name__ == '__main__':
